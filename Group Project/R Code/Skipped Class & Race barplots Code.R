@@ -1,0 +1,75 @@
+GroupData <- read.csv(file.choose())
+
+Vape <- GroupData$Ever_Vaped_Nic
+head(Vape)
+Vape[Vape<0]=NA
+Vape=Vape-1
+table(Vape)
+Cig <- GroupData$Ever_Smoked
+Cig[Cig<0]=NA
+table(Cig)
+CigVape <- Cig+Vape
+table(CigVape)
+Table_Vape_Cig <- table(Vape,Cig)
+Table_Vape_Cig
+Vape <- factor(Vape,levels=c(0,1,2,3,4,5),
+               labels=c("No","Yes","Yes","Yes","Yes","Yes"))
+table(Vape)
+Cig <- factor(Cig,levels=c(0,1),labels=c("No","Yes"))
+table(Cig)
+table(Cig,Vape)
+table(CigVape)
+CigVape <- factor(CigVape,levels=c(0,1,2,3,4,5,6),
+                  labels=c("No","Yes","Yes","Yes","Yes","Yes","Yes"))
+table(CigVape)
+
+
+SC <- factor(SC,levels=c(1,2,3,4,5,6),labels=c("None","1-2","3-5","6-10","11-20","20+"))
+PP <- factor(PP,levels=c(1,2,3,4,5,6,7,8),labels=c("Strong Republican","Mildly Republican","Mildly Dem","Strong Dem","Indep","N/P","Other","DK"))
+RI <- factor(RI,levels=c(1,2,3,4),labels=c("Not","Little","Pretty","Very"))
+Race <- factor(Race,levels=c(1,2,3),labels=c("Black","White","Hispanic"))
+
+MEL=GroupData$Mother_EDU_LVL
+MEL[MEL<0]=NA
+(Table_MEL_CV <- table(MEL,CigVape))
+(Xsq_MEL_CV <- chisq.test(Table_MEL_CV,correct=FALSE))
+
+RI=GroupData$Relgion_IMP
+RI[RI<0]=NA
+(Table_RI_CV <- table(RI,CigVape))
+(Xsq_RI_CV <- chisq.test(Table_RI_CV,correct=FALSE))
+
+PP=GroupData$Political_PREF
+PP[PP<0]=NA
+(Table_PP_CV <- table(PP,CigVape))
+(Xsq_PP_CV <- chisq.test(Table_PP_CV,correct=FALSE))
+
+Race=GroupData$Race
+Race[Race<0]=NA
+(Table_R_CV <- table(Race,CigVape))
+(Xsq_R_CV <- chisq.test(Table_R_CV,correct=FALSE))
+
+(Table_R_CV_Perc <- prop.table(Table_R_CV,1)*100)
+
+R_CV_BP <- barplot(Table_R_CV_Perc, beside = TRUE, xlab = "Consumption of Nicotine", ylab = "Percent",
+                       col = c("Black","White","bisque"), ylim = c(0,100), main = "Conditional Distribution of Nicotine Consumption by Race")
+legend("topright",legend = rownames(Table_R_CV_Perc),fill = c("Black","White","bisque"),
+         title = "Indivdual's Race",cex = .8)
+text(R_CV_BP, Table_R_CV_Perc+3, paste(round(Table_R_CV_Perc, digits = 2),"%",sep=""),cex=1)
+
+
+SC=GroupData$Skipped_Class
+SC[SC<0]=NA
+(Table_SC_CV <- table(CigVape,SC))
+(Xsq_SC_CV <- chisq.test(Table_SC_CV,correct=FALSE))
+
+(Table_SC_CV_Perc <- prop.table(Table_SC_CV,2)*100)
+
+SC_CV_BP <- barplot(Table_SC_CV_Perc, beside = TRUE, xlab = "# of Classes Skipped", ylab = "Percent",
+                   col = c("Green","Purple"), ylim = c(0,100), main = "Conditional Distribution of Nicotine Consumption By The Number Of Classes Skipped")
+legend("topleft",legend = rownames(Table_SC_CV_Perc),fill = c("green","purple"),
+       title = "Nicotine Consumption",cex = .8)
+text(SC_CV_BP, Table_SC_CV_Perc+3, paste(round(Table_SC_CV_Perc, digits = 2),"%",sep=""),cex=.75)
+
+
+
